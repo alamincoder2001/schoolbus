@@ -15,7 +15,7 @@
 			</div>
 			<div class="form-group">
 				<div class="col-xs-1">
-					<input type="submit" class="btn btn-primary" value="Show Report" style="margin-top:0px;border:0px;height:28px;">
+					<input type="submit" class="btn btn-primary" value="Show Report" style="margin-top:0px;border:0px;height:28px;line-height:0;">
 				</div>
 			</div>
 		</form>
@@ -26,6 +26,7 @@
 			<thead>
 				<tr style="background:#7664a9;">
 					<th style="text-align:center;color:white;">SlNo.</th>
+					<th style="text-align:center;color:white;">Adjustment Date</th>
 					<th style="text-align:center;color:white;">Product Name</th>
 					<th style="text-align:center;color:white;">Adjustment Quantity</th>
 					<th style="text-align:center;color:white;">Unit</th>
@@ -36,13 +37,14 @@
 
 			<tbody>
 				<tr>
-					<th style='text-align:center;' colspan="6">Not Found Data</th>
+					<th style='text-align:center;' colspan="7">Not Found Data</th>
 				</tr>
 			</tbody>
 		</table>
 	</div>
 </div>
 
+<script src="<?php echo base_url();?>assets/js/moment.min.js"></script>
 <script type="text/javascript">
 	function searchforRecord(event) {
 		event.preventDefault();
@@ -63,6 +65,7 @@
 						let row = `
 							<tr align="center">
 								<td>${++index}</td>
+								<td>${moment(value.Adjustment_Date).format("DD-MM-YYYY")}</td>
 								<td>${value.productDetail}</td>
 								<td>${value.AdjustmentDetails_AdjustmentQuantity}</td>
 								<td>${value.Unit_Name}</td>
@@ -73,7 +76,7 @@
 						$("#result table tbody").append(row);
 					})
 				} else {
-					$("#result table tbody").html(`<tr><th style='text-align:center;' colspan="6">Not Found Data</th></tr>`);
+					$("#result table tbody").html(`<tr><th style='text-align:center;' colspan="7">Not Found Data</th></tr>`);
 				}
 
 				$("#result").css({display: 'block'});

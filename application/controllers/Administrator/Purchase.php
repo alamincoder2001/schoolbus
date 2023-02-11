@@ -2104,7 +2104,7 @@ class Purchase extends CI_Controller
                                 LEFT JOIN tbl_adjustment a ON a.Adjustment_SlNo = ad.Adjustment_SlNo
                                 LEFT JOIN tbl_product p ON p.Product_SlNo = ad.Product_SlNo
                                 LEFT JOIN tbl_unit un ON un.Unit_SlNo = p.Unit_ID
-                                WHERE ad.status = 'a' $clauses")->result();
+                                WHERE ad.status = 'a' $clauses ORDER BY productDetail")->result();
         echo json_encode($query);
     }
     // STOCK ADJUSTMENT ENTRY END
