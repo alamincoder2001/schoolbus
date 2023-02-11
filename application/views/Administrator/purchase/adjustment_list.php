@@ -22,29 +22,32 @@
 	</div>
 
 	<div class="col-xs-12 col-md-12 col-lg-12" style="margin-top:15px;display: none;" id="result">
-		<table class="table table-bordered">
-			<thead>
-				<tr style="background:#7664a9;">
-					<th style="text-align:center;color:white;">SlNo.</th>
-					<th style="text-align:center;color:white;">Adjustment Date</th>
-					<th style="text-align:center;color:white;">Product Name</th>
-					<th style="text-align:center;color:white;">Adjustment Quantity</th>
-					<th style="text-align:center;color:white;">Unit</th>
-					<th style="text-align:center;color:white;">Adjustment Type</th>
-					<th style="text-align:center;color:white;">Description</th>
-				</tr>
-			</thead>
-
-			<tbody>
-				<tr>
-					<th style='text-align:center;' colspan="7">Not Found Data</th>
-				</tr>
-			</tbody>
-		</table>
+		<button type="button" onclick="Print()"><i class="fa fa-print"></i></button>
+		<div id="adjustment-list">
+			<table class="table table-bordered">
+				<thead>
+					<tr style="background:#7664a9;">
+						<th style="text-align:center;color:white;">SlNo.</th>
+						<th style="text-align:center;color:white;">Adjustment Date</th>
+						<th style="text-align:center;color:white;">Product Name</th>
+						<th style="text-align:center;color:white;">Adjustment Quantity</th>
+						<th style="text-align:center;color:white;">Unit</th>
+						<th style="text-align:center;color:white;">Adjustment Type</th>
+						<th style="text-align:center;color:white;">Description</th>
+					</tr>
+				</thead>
+	
+				<tbody>
+					<tr>
+						<th style='text-align:center;' colspan="7">Not Found Data</th>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 
-<script src="<?php echo base_url();?>assets/js/moment.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
 <script type="text/javascript">
 	function searchforRecord(event) {
 		event.preventDefault();
@@ -79,8 +82,34 @@
 					$("#result table tbody").html(`<tr><th style='text-align:center;' colspan="7">Not Found Data</th></tr>`);
 				}
 
-				$("#result").css({display: 'block'});
+				$("#result").css({
+					display: 'block'
+				});
 			}
 		});
+	}
+
+	async function Print() {
+		let printWindow = window.open("", "", `width=${window.screen.width}, height=${window.screen.height}`)
+		printWindow.document.write(`
+			<!DOCTYPE html>
+			<html>
+				<head>
+					<title>Adjustment List</title>
+					<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" />
+				</head>
+				<body>
+					<div class="container">
+						<h3 class="text-center">Adjustment List</h3>
+						${document.querySelector("#adjustment-list").innerHTML}
+					</div>
+				</body>
+			</html>
+		`);
+
+		printWindow.focus();
+		await new Promise(resolve => setTimeout(resolve, 500));
+		printWindow.print();
+		printWindow.close();
 	}
 </script>
