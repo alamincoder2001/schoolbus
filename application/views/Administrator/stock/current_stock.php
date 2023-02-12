@@ -141,6 +141,8 @@
                             <th>Sales Returned Quantity</th>
                             <th>Transferred In Quantity</th>
                             <th>Transferred Out Quantity</th>
+                            <th>Adjustment Add</th>
+                            <th>Adjustment Less</th>
                             <th>Current Quantity</th>
                             <th>Rate</th>
                             <th>Stock Value</th>
@@ -158,6 +160,8 @@
                             <td>{{ product.sales_returned_quantity }}</td>
                             <td>{{ product.transferred_to_quantity}}</td>
                             <td>{{ product.transferred_from_quantity}}</td>
+                            <td>{{ product.adjustment_add_qty}}</td>
+                            <td>{{ product.adjustment_less_qty}}</td>
                             <td>{{ product.current_quantity }} {{ product.Unit_Name }}</td>
                             <td>{{ product.Product_Purchase_Rate | decimal }}</td>
                             <td>{{ product.stock_value | decimal }}</td>
@@ -165,7 +169,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="12" style="text-align:right;">Total Stock Value</th>
+                            <th colspan="14" style="text-align:right;">Total Stock Value</th>
                             <th>{{ totalStockValue | decimal }}</th>
                         </tr>
                     </tfoot>
@@ -324,9 +328,9 @@ new Vue({
             axios.post(url, parameters).then(res => {
                 if (this.searchType == 'current') {
                     this.stock = res.data.stock.filter((pro) => pro.current_quantity != 0);
+                    console.log(this.stock);
                 } else if (this.searchType == 'supplier') {
                     this.supplierStock = res.data.supplierStock;
-                    //console.log(this.supplierStock);
                 } else {
                     this.stock = res.data.stock;
                 }

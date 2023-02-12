@@ -298,8 +298,26 @@ class Products extends CI_Controller {
                     and tm.transfer_to = '$branchId'
                     " . (isset($data->date) && $data->date != null ? " and tm.transfer_date <= '$data->date'" : "") . "
                 ) as transferred_to_quantity,
+
+                (select ifnull(sum(adjd.AdjustmentDetails_AdjustmentQuantity), 0)
+                    from tbl_adjustmentdetails adjd
+                    left join tbl_adjustment adj on adj.Adjustment_SlNo = adjd.Adjustment_SlNo
+                    where adjd.Product_SlNo = p.Product_SlNo
+                    and adj.adjustment_type = 'Add Stock'
+                    and adjd.status != 'd'
+                    " . (isset($data->date) && $data->date != null ? " and adj.Adjustment_Date <= '$data->date'" : "") . "
+                ) as adjustment_add_qty,
+
+                (select ifnull(sum(adjd.AdjustmentDetails_AdjustmentQuantity), 0)
+                    from tbl_adjustmentdetails adjd
+                    left join tbl_adjustment adj on adj.Adjustment_SlNo = adjd.Adjustment_SlNo
+                    where adjd.Product_SlNo = p.Product_SlNo
+                    and adj.adjustment_type = 'Less Stock'
+                    and adjd.status != 'd'
+                    " . (isset($data->date) && $data->date != null ? " and adj.Adjustment_Date <= '$data->date'" : "") . "
+                ) as adjustment_less_qty,
                         
-                (select (purchased_quantity + sales_returned_quantity + transferred_to_quantity) - (sold_quantity + purchase_returned_quantity + damaged_quantity + transferred_from_quantity)) as current_quantity,
+                (select (purchased_quantity + sales_returned_quantity + transferred_to_quantity + adjustment_add_qty) - (sold_quantity + purchase_returned_quantity + damaged_quantity + transferred_from_quantity + adjustment_less_qty)) as current_quantity,
                 (select p.Product_Purchase_Rate * current_quantity) as stock_value
             from tbl_product p
             left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
@@ -821,6 +839,38 @@ class Products extends CI_Controller {
             join tbl_damage d on d.Damage_SlNo = dmd.Damage_SlNo
             where dmd.Product_SlNo = " . $data->productId . "
             and d.Damage_brunchid = " . $this->brunch . "
+            
+            UNION
+            select 
+                'h' as sequence,
+                adjd.AdjustmentDetails_SlNo as id,
+                adj.Adjustment_Date as date,
+                'Adjustment Add' as description,
+                0 as rate,
+                adjd.AdjustmentDetails_AdjustmentQuantity as in_quantity,
+                0 as out_quantity
+            from tbl_adjustmentdetails adjd
+            left join tbl_adjustment adj on adj.Adjustment_SlNo = adjd.Adjustment_SlNo
+            where adjd.Product_SlNo = " . $data->productId . "
+            and adj.Adjustment_brunchid = " . $this->brunch . "
+            and adj.adjustment_type = 'Add Stock'
+            and adjd.status != 'd'
+
+            UNION
+            select 
+                'i' as sequence,
+                adjd.AdjustmentDetails_SlNo as id,
+                adj.Adjustment_Date as date,
+                'Adjustment Less' as description,
+                0 as rate,
+                0 as in_quantity,
+                adjd.AdjustmentDetails_AdjustmentQuantity as out_quantity
+            from tbl_adjustmentdetails adjd
+            left join tbl_adjustment adj on adj.Adjustment_SlNo = adjd.Adjustment_SlNo
+            where adjd.Product_SlNo = " . $data->productId . "
+            and adj.Adjustment_brunchid = " . $this->brunch . "
+            and adj.adjustment_type = 'Less Stock'
+            and adjd.status != 'd'
 
             order by date, sequence, id
         ")->result();
