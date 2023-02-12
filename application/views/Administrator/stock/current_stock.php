@@ -328,7 +328,6 @@ new Vue({
             axios.post(url, parameters).then(res => {
                 if (this.searchType == 'current') {
                     this.stock = res.data.stock.filter((pro) => pro.current_quantity != 0);
-                    console.log(this.stock);
                 } else if (this.searchType == 'supplier') {
                     this.supplierStock = res.data.supplierStock;
                 } else {
