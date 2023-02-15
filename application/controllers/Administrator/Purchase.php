@@ -2223,8 +2223,8 @@ class Purchase extends CI_Controller
         }
 
         $writer = new Xlsx($spreadsheet);
-        $writer->save($fileName);
-        header("Content-Type: application/vnd.ms-excel");
-        redirect(base_url() . $fileName);
+        header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename='.'Purchaserecord.xlsx');
+        $writer->save('php://output');
     }
 }

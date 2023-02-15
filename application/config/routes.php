@@ -593,6 +593,10 @@ $route['update_investment_account'] = 'Administrator/Invest/updateInvestmentAcco
 $route['delete_investment_account'] = 'Administrator/Invest/deleteInvestmentAccount';
 $route['get_investment_accounts'] = 'Administrator/Invest/getInvestmentAccounts';
 
+//export excel
+$route['export_sale_record/(:any)/(:any)'] = 'Administrator/Sales/exportExcelSaleRecord/$1/$2';
+$route['export_purchase_record/(:any)/(:any)'] = 'Administrator/Purchase/exportExcelPurchaseRecord/$1/$2';
+$route['export_stock_record'] = 'Administrator/Product/exportExcelStockRecord';
 
 //mother api content
 $route['get_mother_api_content'] = 'Administrator/Page/getMotherApiContent';

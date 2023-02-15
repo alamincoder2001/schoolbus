@@ -1,5 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Sales extends CI_Controller
 {
     public function __construct()
@@ -1303,43 +1306,44 @@ class Sales extends CI_Controller
     function select_customerName()
     {
 ?>
-<div class="form-group">
-    <label class="col-sm-2 control-label no-padding-right" for="customerID"> Select Customer </label>
-    <div class="col-sm-3">
-        <select name="" id="customerID" data-placeholder="Choose a Customer..." class="chosen-select">
-            <option value="All">All</option>
-            <?php
+        <div class="form-group">
+            <label class="col-sm-2 control-label no-padding-right" for="customerID"> Select Customer </label>
+            <div class="col-sm-3">
+                <select name="" id="customerID" data-placeholder="Choose a Customer..." class="chosen-select">
+                    <option value="All">All</option>
+                    <?php
                     $sql = $this->db->query("SELECT * FROM tbl_customer where Customer_brunchid = '" . $this->sbrunch . "' AND Customer_Type = 'Local' order by Customer_Name asc");
                     $row = $sql->result();
                     foreach ($row as $row) { ?>
 
-            <option value="<?php echo $row->Customer_SlNo; ?>"><?php echo $row->Customer_Name; ?>
-                (<?php echo $row->Customer_Code; ?>)</option>
-            <?php } ?>
-        </select>
-    </div>
-</div>
-<?php
+                        <option value="<?php echo $row->Customer_SlNo; ?>"><?php echo $row->Customer_Name; ?>
+                            (<?php echo $row->Customer_Code; ?>)</option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
+    <?php
     }
     function select_InvCustomerName()
     {
     ?>
-<div class="form-group">
-    <div class="col-sm-3">
-        <select id="Salestype" class="chosen-select" name="Salestype">
-            <option value="All">All</option>
-            <?php
+        <div class="form-group">
+            <div class="col-sm-3">
+                <select id="Salestype" class="chosen-select" name="Salestype">
+                    <option value="All">All</option>
+                    <?php
                     $sql = $this->db->query("SELECT * FROM tbl_customer where Customer_brunchid = '" . $this->sbrunch . "' AND Customer_Type = 'Local' order by Customer_Name asc");
                     $row = $sql->result();
                     foreach ($row as $row) { ?>
 
-            <option value="<?php echo $row->Customer_SlNo; ?>"><?php echo $row->Customer_Name; ?>
-                (<?php echo $row->Customer_Code; ?>)</option>
-            <?php } ?>
-        </select>
-    </div>
-</div>
+                        <option value="<?php echo $row->Customer_SlNo; ?>"><?php echo $row->Customer_Name; ?>
+                            (<?php echo $row->Customer_Code; ?>)</option>
+                    <?php } ?>
+                </select>
+            </div>
+        </div>
 <?php
+
     }
     function sales_customerName()
     {
@@ -1969,5 +1973,73 @@ class Sales extends CI_Controller
         }
 
         echo json_encode($res);
+    }
+
+    public function exportExcelSaleRecord($dateFrom, $dateTo)
+    {
+        $sales = $this->db->query("
+            select 
+            concat(sm.SaleMaster_InvoiceNo, ' - ', c.Customer_Name) as invoice_text,
+            sm.*,
+            c.Customer_Code,
+            c.Customer_Name,
+            c.Customer_Mobile,
+            c.Customer_Address,
+            c.Customer_Type,
+            e.Employee_Name,
+            br.Brunch_name,
+            m.month_name
+            from tbl_salesmaster sm
+            left join tbl_customer c on c.Customer_SlNo = sm.SalseCustomer_IDNo
+            left join tbl_employee e on e.Employee_SlNo = sm.employee_id
+            left join tbl_brunch br on br.brunch_id = sm.SaleMaster_branchid
+            left join tbl_month m on m.month_id = sm.month_id
+            where sm.SaleMaster_branchid = '$this->sbrunch'
+            and sm.Status <> 'd'
+            and sm.Status != 'p'
+            and sm.SaleMaster_SaleDate BETWEEN '$dateFrom' and '$dateTo'
+            order by sm.SaleMaster_SlNo desc
+        ")->result();
+
+        $fileName = 'SalesRecord.'; 
+        $spreadsheet = new Spreadsheet();
+
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'Invoice No.');
+        $sheet->setCellValue('B1', 'Sales Date');
+        $sheet->setCellValue('C1', 'Customer Name');
+        $sheet->setCellValue('D1', 'Employee Name');
+        $sheet->setCellValue('E1', 'Saved By');
+        $sheet->setCellValue('F1', 'VAT');
+        $sheet->setCellValue('G1', 'Sub Total');
+        $sheet->setCellValue('H1', 'Discount');
+        $sheet->setCellValue('I1', 'Transport Cost');
+        $sheet->setCellValue('J1', 'Total');
+        $sheet->setCellValue('K1', 'Paid');
+        $sheet->setCellValue('L1', 'Due');
+        $sheet->setCellValue('M1', 'Note');
+
+        $row = 2;
+        foreach ($sales as $item) {
+            $sheet->setCellValue('A' . $row, $item->SaleMaster_InvoiceNo);
+            $sheet->setCellValue('B' . $row, $item->SaleMaster_SaleDate);
+            $sheet->setCellValue('C' . $row, $item->Customer_Name);
+            $sheet->setCellValue('D' . $row, $item->Employee_Name);
+            $sheet->setCellValue('E' . $row, $item->AddBy);
+            $sheet->setCellValue('F' . $row, $item->SaleMaster_TaxAmount);
+            $sheet->setCellValue('G' . $row, $item->SaleMaster_SubTotalAmount);
+            $sheet->setCellValue('H' . $row, $item->SaleMaster_TotalDiscountAmount);
+            $sheet->setCellValue('I' . $row, $item->SaleMaster_Freight);
+            $sheet->setCellValue('J' . $row, $item->SaleMaster_TotalSaleAmount);
+            $sheet->setCellValue('K' . $row, $item->SaleMaster_PaidAmount);
+            $sheet->setCellValue('L' . $row, $item->SaleMaster_DueAmount);
+            $sheet->setCellValue('M' . $row, $item->SaleMaster_Description);
+            $row++;
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename='.'Salesrecord.xlsx');
+        $writer->save('php://output');
     }
 }

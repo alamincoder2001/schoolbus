@@ -52,7 +52,7 @@ class Customer extends CI_Controller
             select
                 c.*,
                 d.District_Name,
-                concat_ws(' - ', c.Customer_Code, c.Customer_Name, c.owner_name, c.Customer_Mobile) as display_name,
+                concat_ws(' - ', c.Customer_Code, c.Employee_ID, c.Customer_Name, c.owner_name, c.Customer_Mobile) as display_name,
                 dp.Department_Name,
                 jt.Job_Type,
                 jl.Job_Location
