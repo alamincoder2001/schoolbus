@@ -87,8 +87,9 @@
     </div>
     <div class="row" v-if="searchType != null" style="display:none"
         v-bind:style="{display: searchType == null ? 'none' : ''}">
-        <div class="col-md-12">
-            <a href="" v-on:click.prevent="print"><i class="fa fa-print"></i> Print</a>
+        <div class="col-md-12" style="margin-bottom: 10px;display:flex;justify-content: space-between;">
+            <a href="" v-on:click.prevent="print" style="margin: 0;"><i class="fa fa-print"></i> Print</a>
+            <a v-if="searchType == 'current' || searchType == 'total' || searchType == ''" :href="`export_stock_record/${date}/${searchType == ''?'total':searchType}`" style="margin: 0px;background: #ff9b1fd9;padding: 3px;color: white;text-decoration: none;">Export Excel</a>
         </div>
     </div>
     <div class="row">

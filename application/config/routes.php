@@ -85,31 +85,31 @@ $route['areaedit/(:any)'] = 'Administrator/Page/areaedit/$1';
 $route['areaupdate'] = 'Administrator/Page/areaupdate';
 $route['get_districts'] = 'Administrator/Page/getDistricts';
 
-$route['product'] = 'Administrator/Products';
-$route['add_product'] = 'Administrator/Products/addProduct';
-$route['productEdit'] = 'Administrator/Products/product_edit';
-$route['update_product'] = 'Administrator/Products/updateProduct';
-$route['delete_product'] = 'Administrator/Products/deleteProduct';
-$route['active_product'] = 'Administrator/Products/activeProduct';
-$route['viewAllProduct'] = 'Administrator/Products/view_all_product';
+$route['product']                        = 'Administrator/Products';
+$route['add_product']                    = 'Administrator/Products/addProduct';
+$route['productEdit']                    = 'Administrator/Products/product_edit';
+$route['update_product']                 = 'Administrator/Products/updateProduct';
+$route['delete_product']                 = 'Administrator/Products/deleteProduct';
+$route['active_product']                 = 'Administrator/Products/activeProduct';
+$route['viewAllProduct']                 = 'Administrator/Products/view_all_product';
 $route['selectCategory_by_brand/(:any)'] = 'Administrator/page/selectCategory_by_brand/$1';
-$route['productlist'] = 'Administrator/Reports/productlist';
-$route['currentStock'] = 'Administrator/Products/current_stock';
-$route['searchStock'] = 'Administrator/Products/search_stock';
-$route['currentStockPrint'] = 'Administrator/Reports/current_stock';
-$route['stockAvailable'] = 'Administrator/Products/stockAvailable';
-$route['stockAvailablePrint'] = 'Administrator/Reports/stockAvailable';
-$route['productName']    =    'Administrator/Products/product_name';
-$route['get_products']    =    'Administrator/Products/getProducts';
-$route['get_product_stock']    =    'Administrator/Products/getProductStock';
-$route['get_current_stock']    =    'Administrator/Products/getCurrentStock';
-$route['get_total_stock']    =    'Administrator/Products/getTotalStock'; 
-$route['get_supplier_wise_stock']    =    'Administrator/Products/getSupplierWiseStock'; 
-$route['product_ledger']    =    'Administrator/Products/productLedger';
-$route['get_product_ledger']    =    'Administrator/Products/getProductLedger';
-$route['reorder_list']    =    'Administrator/Reports/reOrderList';
+$route['productlist']                    = 'Administrator/Reports/productlist';
+$route['currentStock']                   = 'Administrator/Products/current_stock';
+$route['searchStock']                    = 'Administrator/Products/search_stock';
+$route['currentStockPrint']              = 'Administrator/Reports/current_stock';
+$route['stockAvailable']                 = 'Administrator/Products/stockAvailable';
+$route['stockAvailablePrint']            = 'Administrator/Reports/stockAvailable';
+$route['productName']                    = 'Administrator/Products/product_name';
+$route['get_products']                   = 'Administrator/Products/getProducts';
+$route['get_product_stock']              = 'Administrator/Products/getProductStock';
+$route['get_current_stock']              = 'Administrator/Products/getCurrentStock';
+$route['get_total_stock']                = 'Administrator/Products/getTotalStock';
+$route['get_supplier_wise_stock']        = 'Administrator/Products/getSupplierWiseStock';
+$route['product_ledger']                 = 'Administrator/Products/productLedger';
+$route['get_product_ledger']             = 'Administrator/Products/getProductLedger';
+$route['reorder_list']                   = 'Administrator/Reports/reOrderList';
 
-$route['totalStock'] = 'Administrator/Products/total_stock';
+$route['totalStock']      = 'Administrator/Products/total_stock';
 $route['totalStockPrint'] = 'Administrator/Reports/total_stock';
 
 
@@ -596,7 +596,7 @@ $route['get_investment_accounts'] = 'Administrator/Invest/getInvestmentAccounts'
 //export excel
 $route['export_sale_record/(:any)/(:any)'] = 'Administrator/Sales/exportExcelSaleRecord/$1/$2';
 $route['export_purchase_record/(:any)/(:any)'] = 'Administrator/Purchase/exportExcelPurchaseRecord/$1/$2';
-$route['export_stock_record'] = 'Administrator/Product/exportExcelStockRecord';
+$route['export_stock_record/(:any)/(:any)'] = 'Administrator/Products/exportExcelStockRecord/$1/$2';
 
 //mother api content
 $route['get_mother_api_content'] = 'Administrator/Page/getMotherApiContent';

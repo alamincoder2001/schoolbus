@@ -2189,7 +2189,6 @@ class Purchase extends CI_Controller
             order by pm.PurchaseMaster_SlNo desc
         ")->result();
 
-        $fileName = 'PurchaseRecord.xlsx';
         $spreadsheet = new Spreadsheet();
 
         $sheet = $spreadsheet->getActiveSheet();
