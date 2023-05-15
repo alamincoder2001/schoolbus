@@ -1895,33 +1895,34 @@ class Purchase extends CI_Controller
             $data = json_decode($this->input->raw_input_stream);
 
             $adjustment = array(
-                'Adjustment_InvoiceNo' => $data->Adjustment_InvoiceNo,
-                'Adjustment_Date' => $data->Adjustment_Date,
-                'adjustment_type' => $data->adjustment_type,
+                'Adjustment_InvoiceNo'   => $data->Adjustment_InvoiceNo,
+                'Adjustment_Date'        => $data->Adjustment_Date,
+                'supplier_id'            => $data->supplier_id,
+                'adjustment_type'        => $data->adjustment_type,
                 'Adjustment_Description' => $data->Adjustment_Description,
-                'status' => 'a',
-                'AddBy' => $this->session->userdata("FullName"),
-                'AddTime' => date('Y-m-d H:i:s'),
-                'Adjustment_brunchid' => $this->session->userdata('BRANCHid')
+                'status'                 => 'a',
+                'AddBy'                  => $this->session->userdata("FullName"),
+                'AddTime'                => date('Y-m-d H:i:s'),
+                'Adjustment_brunchid'    => $this->session->userdata('BRANCHid')
             );
 
             $this->db->insert('tbl_adjustment', $adjustment);
             $adjustmentId = $this->db->insert_id();
 
             $adjustmentDetails = array(
-                'Adjustment_SlNo' => $adjustmentId,
-                'Product_SlNo' => $data->Product_SlNo,
+                'Adjustment_SlNo'                      => $adjustmentId,
+                'Product_SlNo'                         => $data->Product_SlNo,
                 'AdjustmentDetails_AdjustmentQuantity' => $data->AdjustmentDetails_AdjustmentQuantity,
-                'adjustment_rate' => $data->adjustment_rate,
-                'adjustment_amount' => $data->adjustment_amount,
-                'status' => 'a',
-                'AddBy' => $this->session->userdata("FullName"),
-                'AddTime' => date('Y-m-d H:i:s')
+                'adjustment_rate'                      => $data->adjustment_rate,
+                'adjustment_amount'                    => $data->adjustment_amount,
+                'status'                               => 'a',
+                'AddBy'                                => $this->session->userdata("FullName"),
+                'AddTime'                              => date('Y-m-d H:i:s')
             );
 
             $this->db->insert('tbl_adjustmentdetails', $adjustmentDetails);
 
-            if ($data->adjustment_type == 'Less Stock') {
+            if ($data->adjustment_type == 'Less_Stock') {
                 $this->db->query("
                     update tbl_currentinventory ci 
                     set ci.adjustment_quantity = ci.adjustment_quantity + ? 
@@ -1930,7 +1931,7 @@ class Purchase extends CI_Controller
                 ", [$data->AdjustmentDetails_AdjustmentQuantity, $data->Product_SlNo, $this->session->userdata('BRANCHid')]);
             }
 
-            if ($data->adjustment_type == 'Add Stock') {
+            if ($data->adjustment_type == 'Add_Stock') {
                 $this->db->query("
                     update tbl_currentinventory ci 
                     set ci.adjustment_qnty_add = ci.adjustment_qnty_add + ? 
@@ -1963,11 +1964,12 @@ class Purchase extends CI_Controller
             $adjustmentId = $data->Adjustment_SlNo;
 
             $adjustment = array(
-                'Adjustment_InvoiceNo' => $data->Adjustment_InvoiceNo,
-                'Adjustment_Date' => $data->Adjustment_Date,
+                'Adjustment_InvoiceNo'   => $data->Adjustment_InvoiceNo,
+                'supplier_id'            => $data->supplier_id,
+                'Adjustment_Date'        => $data->Adjustment_Date,
                 'Adjustment_Description' => $data->Adjustment_Description,
-                'UpdateBy' => $this->session->userdata("FullName"),
-                'UpdateTime' => date('Y-m-d H:i:s')
+                'UpdateBy'               => $this->session->userdata("FullName"),
+                'UpdateTime'             => date('Y-m-d H:i:s')
             );
 
             $this->db->where('Adjustment_SlNo', $adjustmentId)->update('tbl_adjustment', $adjustment);
@@ -1982,12 +1984,12 @@ class Purchase extends CI_Controller
             ", [$oldProduct->AdjustmentDetails_AdjustmentQuantity, $oldProduct->Product_SlNo, $this->session->userdata('BRANCHid')]);
 
             $adjustmentDetails = array(
-                'Product_SlNo' => $data->Product_SlNo,
+                'Product_SlNo'                         => $data->Product_SlNo,
                 'AdjustmentDetails_AdjustmentQuantity' => $data->AdjustmentDetails_AdjustmentQuantity,
-                'adjustment_rate' => $data->adjustment_rate,
-                'adjustment_amount' => $data->adjustment_amount,
-                'UpdateBy' => $this->session->userdata("FullName"),
-                'UpdateTime' => date('Y-m-d H:i:s')
+                'adjustment_rate'                      => $data->adjustment_rate,
+                'adjustment_amount'                    => $data->adjustment_amount,
+                'UpdateBy'                             => $this->session->userdata("FullName"),
+                'UpdateTime'                           => date('Y-m-d H:i:s')
             );
 
             $this->db->where('Adjustment_SlNo', $adjustmentId)->update('tbl_adjustmentdetails', $adjustmentDetails);
@@ -2015,7 +2017,8 @@ class Purchase extends CI_Controller
             $adjustmentId     = $data->adjustmentId;
 
             $oldProduct = $this->db->query("select * from tbl_adjustmentdetails where Adjustment_SlNo = ?", $adjustmentId)->row();
-            if ($data->adjustment_type == 'Less Stock') {
+
+            if ($data->adjustment_type == 'Less_Stock') {
                 $this->db->query("
                     update tbl_currentinventory ci 
                     set ci.adjustment_quantity = ci.adjustment_quantity - ? 
@@ -2057,15 +2060,19 @@ class Purchase extends CI_Controller
                 dd.adjustment_rate,
                 dd.adjustment_amount,
                 d.Adjustment_SlNo,
+                d.supplier_id,
                 d.Adjustment_InvoiceNo,
                 d.Adjustment_Date,
                 d.adjustment_type,
                 d.Adjustment_Description,
                 p.Product_Code,
-                p.Product_Name
+                p.Product_Name,
+                s.Supplier_Name,
+                concat(s.Supplier_Code, ' - ', s.Supplier_Name) as supplier_text
             from tbl_adjustmentdetails dd
             join tbl_adjustment d on d.Adjustment_SlNo = dd.Adjustment_SlNo
-            join tbl_product p on p.Product_SlNo = dd.Product_SlNo
+            join tbl_product p on p.Product_SlNo = dd.Product_SlNo            
+            left join tbl_supplier s on s.Supplier_SlNo = d.supplier_id
             where d.status = 'a' and dd.status = 'a'
             $clauses
         ")->result();
@@ -2223,7 +2230,7 @@ class Purchase extends CI_Controller
 
         $writer = new Xlsx($spreadsheet);
         header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename='.'Purchaserecord.xlsx');
+        header('Content-Disposition: attachment;filename=' . 'Purchaserecord.xlsx');
         $writer->save('php://output');
     }
 }

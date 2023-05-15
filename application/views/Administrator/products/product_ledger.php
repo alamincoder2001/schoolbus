@@ -1,55 +1,69 @@
 <style>
-	.v-select{
+	.v-select {
 		margin-bottom: 5px;
 	}
-	.v-select .dropdown-toggle{
+
+	.v-select .dropdown-toggle {
 		padding: 0px;
 	}
-	.v-select input[type=search], .v-select input[type=search]:focus{
+
+	.v-select input[type=search],
+	.v-select input[type=search]:focus {
 		margin: 0px;
 	}
-	.v-select .vs__selected-options{
+
+	.v-select .vs__selected-options {
 		overflow: hidden;
-		flex-wrap:nowrap;
+		flex-wrap: nowrap;
 	}
-	.v-select .selected-tag{
+
+	.v-select .selected-tag {
 		margin: 2px 0px;
 		white-space: nowrap;
-		position:absolute;
+		position: absolute;
 		left: 0px;
 	}
-	.v-select .vs__actions{
-		margin-top:-5px;
+
+	.v-select .vs__actions {
+		margin-top: -5px;
 	}
-	.v-select .dropdown-menu{
+
+	.v-select .dropdown-menu {
 		width: auto;
-		overflow-y:auto;
+		overflow-y: auto;
 	}
 </style>
 <div class="row" id="productLedger">
 	<div class="col-xs-12 col-md-12 col-lg-12" style="border-bottom:1px #ccc solid;">
 		<form v-on:submit.prevent="getProductLedger">
-			<div class="form-group">
-				<label class="col-sm-1 control-label no-padding-right"> Product </label>
+			<div class="form-group" style="margin-top:10px;">
+				<label class="col-sm-1 no-padding-right" style="width: 65px;"> Supplier </label>
 				<div class="col-sm-2">
-					<v-select v-bind:options="products" v-model="selectedProduct" label="display_text"></v-select>
+					<v-select v-bind:options="suppliers" v-model="selectedSupplier" v-on:input="onChangeSupplier" label="display_name" placeholder="Select Supplier">
+					</v-select>
 				</div>
 			</div>
-	
 			<div class="form-group">
-				<label class="col-sm-1 control-label no-padding-right"> Date from </label>
+				<label class="col-sm-1 control-label no-padding-right" style="width: 65px;"> Product </label>
 				<div class="col-sm-2">
-					<input type="date" class="form-control" v-model="dateFrom">
-				</div>
-				<label class="col-sm-1 control-label no-padding-right text-center" style="width:30px"> to </label>
-				<div class="col-sm-2">
-					<input type="date" class="form-control" v-model="dateTo">
+					<v-select v-bind:options="products" v-model="selectedProduct" label="display_text" placeholder="Select Product"></v-select>
 				</div>
 			</div>
-	
+
+			<div class="form-group">
+				<label class="col-sm-1 control-label no-padding-right"> Date From </label>
+				<div class="col-sm-1">
+					<input type="date" style="width: 110px;" class="form-control" v-model="dateFrom">
+				</div>
+				<label class="col-sm-1 control-label no-padding-right text-center" style="width:30px;margin-left: 24px;"> to </label>
+				<div class="col-sm-1">
+					<input type="date" style="width: 110px;" class="form-control" v-model="dateTo">
+				</div>
+			</div>
+
 			<div class="form-group">
 				<div class="col-sm-1">
-					<input type="submit" class="btn btn-primary" value="Show" style="margin-top:0px;border:0px;height:28px;">
+					<input type="submit" class="btn btn-primary" value="Show" style="margin-top:0px;border:0px;height:28px;margin-left: 24px;">
 				</div>
 			</div>
 		</form>
@@ -97,40 +111,69 @@
 	</div>
 </div>
 
-<script src="<?php echo base_url();?>assets/js/vue/vue.min.js"></script>
-<script src="<?php echo base_url();?>assets/js/vue/axios.min.js"></script>
-<script src="<?php echo base_url();?>assets/js/vue/vue-select.min.js"></script>
-<script src="<?php echo base_url();?>assets/js/moment.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vue/vue.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vue/axios.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/vue/vue-select.min.js"></script>
+<script src="<?php echo base_url(); ?>assets/js/moment.min.js"></script>
 
 <script>
 	Vue.component('v-select', VueSelect.VueSelect);
 	new Vue({
 		el: '#productLedger',
-		data(){
+		data() {
 			return {
 				products: [],
 				selectedProduct: null,
 				dateFrom: null,
 				dateTo: null,
 				ledger: [],
-                previousStock: 0,
-                showTable: false
+				previousStock: 0,
+				showTable: false,
+				suppliers: [],
+				selectedSupplier: null,
 			}
 		},
-		created(){
+		created() {
 			let today = moment().format('YYYY-MM-DD');
 			this.dateTo = today;
 			this.dateFrom = moment().format('YYYY-MM-DD');
-			this.getProducts();
+			this.getSuppliers();
+			// this.getProducts();
 		},
-		methods:{
-			getProducts(){
-				axios.get('/get_products').then(res => {
+		methods: {
+			onChangeSupplier() {
+				if (this.selectedSupplier == null) {
+					return;
+				}
+				this.getProducts();
+			},
+			getSuppliers() {
+				axios.post('/get_suppliers', {
+					isService: 'false'
+				}).then(res => {
+					this.suppliers = res.data;
+				})
+			},
+			getProducts() {
+				if (this.selectedSupplier == null) {
+					alert('Select a Supplier')
+					return
+				}
+				let filter = {
+					supplierId: this.selectedSupplier.Supplier_SlNo,
+					isService: 'false'
+				}
+				axios.post('/get_products', filter).then(res => {
 					this.products = res.data;
 				})
 			},
-			getProductLedger(){
-				if(this.selectedProduct == null){
+			// getProducts() {
+			// 	axios.get('/get_products').then(res => {
+			// 		this.products = res.data;
+			// 	})
+			// },
+			getProductLedger() {
+				if (this.selectedProduct == null) {
 					alert('Select product');
 					return;
 				}
@@ -140,7 +183,7 @@
 					productId: this.selectedProduct.Product_SlNo
 				}
 
-                this.showTable = false;
+				this.showTable = false;
 
 				axios.post('/get_product_ledger', data).then(res => {
 					this.ledger = res.data.ledger;
@@ -148,7 +191,7 @@
 					this.showTable = true;
 				})
 			},
-			async print(){
+			async print() {
 				let reportContent = `
 					<div class="container">
 						<h4 style="text-align:center">Product Ledger</h4 style="text-align:center">
@@ -173,7 +216,7 @@
 
 				var mywindow = window.open('', 'PRINT', `width=${screen.width}, height=${screen.height}`);
 				mywindow.document.write(`
-					<?php $this->load->view('Administrator/reports/reportHeader.php');?>
+					<?php $this->load->view('Administrator/reports/reportHeader.php'); ?>
 				`);
 
 				mywindow.document.body.innerHTML += reportContent;

@@ -279,6 +279,7 @@ class Sales extends CI_Controller
                 c.Customer_Name,
                 c.Customer_Mobile,
                 c.Customer_Address,
+                c.Employee_ID,
                 e.Employee_Name,
                 br.Brunch_name,
                 (
@@ -367,6 +368,7 @@ class Sales extends CI_Controller
             c.Customer_Mobile,
             c.Customer_Address,
             c.Customer_Type,
+            c.Employee_ID,
             e.Employee_Name,
             br.Brunch_name,
             m.month_name
@@ -2001,7 +2003,7 @@ class Sales extends CI_Controller
             order by sm.SaleMaster_SlNo desc
         ")->result();
 
-        $fileName = 'SalesRecord.'; 
+        $fileName = 'SalesRecord.';
         $spreadsheet = new Spreadsheet();
 
         $sheet = $spreadsheet->getActiveSheet();
@@ -2039,7 +2041,7 @@ class Sales extends CI_Controller
 
         $writer = new Xlsx($spreadsheet);
         header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename='.'Salesrecord.xlsx');
+        header('Content-Disposition: attachment;filename=' . 'Salesrecord.xlsx');
         $writer->save('php://output');
     }
 }

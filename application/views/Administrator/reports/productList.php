@@ -15,6 +15,7 @@
                             <tr>
                                 <th>Sl</th>
                                 <th>Product Id</th>
+                                <th>Supplier Name</th>
                                 <th>Product Name</th>
                                 <th>Category</th>
                                 <th>Sale Price</th>
@@ -24,6 +25,7 @@
                             <tr v-for="(product, sl) in products">
                                 <td style="text-align:center;">{{ sl + 1 }}</td>
                                 <td>{{ product.Product_Code }}</td>
+                                <td>{{ product.supplier_text }}</td>
                                 <td>{{ product.Product_Name }}</td>
                                 <td>{{ product.ProductCategory_Name }}</td>
                                 <td style="text-align:right;">{{ product.Product_SellingPrice }}</td>
@@ -78,7 +80,7 @@
                 mywindow.document.write(`
 					<?php $this->load->view('Administrator/reports/reportHeader.php'); ?>
 				`);
-                
+
                 mywindow.document.body.innerHTML += reportContent;
 
                 mywindow.focus();

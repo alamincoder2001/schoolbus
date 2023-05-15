@@ -37,8 +37,8 @@
 <div class="row" id="customerDueList">
     <div class="col-xs-12 col-md-12 col-lg-12" style="border-bottom:1px #ccc solid;">
         <div class="form-group">
-            <label class="col-lg-2 control-label no-padding-right">Search Type</label>
-            <div class="col-lg-2">
+            <label class="col-sm-1 control-label no-padding-right">Search Type</label>
+            <div class="col-sm-2">
                 <select class="form-control" v-model="searchType" v-on:change="onChangeSearchType" style="padding:0px;">
                     <option value="all">All</option>
                     <option value="customer">By Customer</option>
@@ -47,22 +47,22 @@
             </div>
         </div>
         <div class="form-group" style="display: none" v-bind:style="{display: searchType == 'customer' ? '' : 'none'}">
-            <label class="col-xs-2 control-label no-padding-right">Select Customer</label>
-            <div class="col-xs-2">
+            <label class="col-sm-2 control-label no-padding-right">Select Customer</label>
+            <div class="col-sm-2">
                 <v-select v-bind:options="customers" v-model="selectedCustomer" label="display_name"
                     placeholder="Select customer"></v-select>
             </div>
         </div>
         <div class="form-group" style="display: none" v-bind:style="{display: searchType == 'area' ? '' : 'none'}">
-            <label class="col-lg-1 control-label no-padding-right">Select Area</label>
-            <div class="col-lg-2">
+            <label class="col-sm-1 control-label no-padding-right">Select Area</label>
+            <div class="col-sm-2">
                 <v-select v-bind:options="areas" v-model="selectedArea" label="District_Name" placeholder="Select area">
                 </v-select>
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-lg-2">
+            <div class="col-sm-2">
                 <input type="button" class="btn btn-primary" value="Show Report" v-on:click="getDues"
                     style="margin-top:0px;border:0px;height:28px;">
             </div>

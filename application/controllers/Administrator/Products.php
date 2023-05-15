@@ -177,6 +177,9 @@ class Products extends CI_Controller
         $data = json_decode($this->input->raw_input_stream);
 
         $clauses = "";
+        if (isset($data->supplierId) && $data->supplierId != '') {
+            $clauses .= " and p.supplier_id = '$data->supplierId'";
+        }
         if (isset($data->categoryId) && $data->categoryId != '') {
             $clauses .= " and p.ProductCategory_ID = '$data->categoryId'";
         }
@@ -188,13 +191,17 @@ class Products extends CI_Controller
         $products = $this->db->query("
             select
                 p.*,
+                s.Supplier_Name,
+                s.Supplier_Code,
                 concat(p.Product_Name, ' - ', p.Product_Code) as display_text,
+                concat(s.Supplier_Code, ' - ', s.Supplier_Name) as supplier_text,
                 pc.ProductCategory_Name,
                 br.brand_name,
                 u.Unit_Name
             from tbl_product p
             left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
             left join tbl_brand br on br.brand_SiNo = p.brand
+            left join tbl_supplier s on s.Supplier_SlNo = p.supplier_id
             left join tbl_unit u on u.Unit_SlNo = p.Unit_ID
             where p.status = 'a'
             $clauses
@@ -219,8 +226,12 @@ class Products extends CI_Controller
         if (isset($data->stockType) && $data->stockType == 'low') {
             $clauses .= " and current_quantity <= Product_ReOrederLevel";
         }
+        $supplierClause = "";
+        if (isset($data->supllierId) && $data->supllierId != '') {
+            $supplierClause .= " and p.supplier_id = '$data->supllierId' ";
+        }
 
-        $stock = $this->mt->currentStock($clauses);
+        $stock = $this->mt->currentStock($clauses, $supplierClause);
         $res['stock'] = $stock;
         $res['totalValue'] = array_sum(
             array_map(function ($product) {
@@ -248,6 +259,11 @@ class Products extends CI_Controller
 
         if (isset($data->brandId) && $data->brandId != null) {
             $clauses .= " and p.brand = '$data->brandId'";
+        }
+
+        $supplierClause = "";
+        if (isset($data->supllierId) && $data->supllierId != '') {
+            $supplierClause .= " and p.supplier_id = '$data->supllierId' ";
         }
 
         $stock = $this->db->query("
@@ -339,7 +355,7 @@ class Products extends CI_Controller
             left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
             left join tbl_brand b on b.brand_SiNo = p.brand
             left join tbl_unit u on u.Unit_SlNo = p.Unit_ID
-            where p.status = 'a' and p.is_service = 'false' $clauses
+            where p.status = 'a' and p.is_service = 'false' $clauses $supplierClause
         ")->result();
 
         $res['stock'] = $stock;
@@ -381,9 +397,7 @@ class Products extends CI_Controller
         WHERE prd.Status = 'a' AND pmp.Supplier_SlNo = pm.Supplier_SlNo AND prd.PurchaseReturnDetailsProduct_SlNo = p.Product_SlNo
     ) AS return_qty,
 
-    (
-        SELECT purchase_qty - return_qty
-    ) AS current_qty,
+    (SELECT purchase_qty - return_qty) AS current_qty,
 
     (select p.Product_Purchase_Rate * current_qty) as stock_value
     
@@ -1060,7 +1074,7 @@ class Products extends CI_Controller
             header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             header('Content-Disposition: attachment;filename=' . 'TotalStockRecord.xlsx');
             $writer->save('php://output');
-        }else{
+        } else {
             $stock = $this->mt->currentStock();
 
             $spreadsheet = new Spreadsheet();

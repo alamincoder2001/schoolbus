@@ -677,7 +677,7 @@ class Customer extends CI_Controller
     function getCustomerLedger()
     {
         $data = json_decode($this->input->raw_input_stream);
-        $previousDueQuery = $this->db->query("select ifnull(previous_due, 0.00) as previous_due from tbl_customer where Customer_SlNo = '$data->customerId'")->row();
+        $previousDueQuery = $this->db->query("select ifnull(opening_due, 0.00) as opening_due from tbl_customer where Customer_SlNo = '$data->customerId'")->row();
 
         $payments = $this->db->query("
             select 
@@ -761,10 +761,10 @@ class Customer extends CI_Controller
             order by date, sequence, id
         ")->result();
 
-        $previousBalance = $previousDueQuery->previous_due;
+        $previousBalance = $previousDueQuery->opening_due;
 
         foreach ($payments as $key => $payment) {
-            $lastBalance = $key == 0 ? $previousDueQuery->previous_due : $payments[$key - 1]->balance;
+            $lastBalance = $key == 0 ? $previousDueQuery->opening_due : $payments[$key - 1]->balance;
             $payment->balance = ($lastBalance + $payment->bill + $payment->paid_out) - ($payment->paid + $payment->returned);
         }
 

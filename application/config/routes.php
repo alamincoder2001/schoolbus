@@ -109,7 +109,7 @@ $route['product_ledger']                 = 'Administrator/Products/productLedger
 $route['get_product_ledger']             = 'Administrator/Products/getProductLedger';
 $route['reorder_list']                   = 'Administrator/Reports/reOrderList';
 
-$route['totalStock']      = 'Administrator/Products/total_stock';
+$route['totalStock'] = 'Administrator/Products/total_stock';
 $route['totalStockPrint'] = 'Administrator/Reports/total_stock';
 
 
@@ -173,8 +173,8 @@ $route['update_purchase'] = 'Administrator/Purchase/updatePurchase';
 $route['purchaseInvoice'] = 'Administrator/Purchase/purchase_bill';
 $route['purchaseInvoiceSearch'] = 'Administrator/Purchase/purchase_invoice_search';
 $route['PurchaseInvoicePrint'] = 'Administrator/Reports/Purchase_invoice';
-$route['purchaseRecord'] = 'Administrator/Purchase/purchase_record'; 
-$route['purchasePendingRecord'] = 'Administrator/Purchase/purchase_pending_record'; 
+$route['purchaseRecord'] = 'Administrator/Purchase/purchase_record';
+$route['purchasePendingRecord'] = 'Administrator/Purchase/purchase_pending_record';
 $route['get_purchase_record'] = 'Administrator/Purchase/getPurchaseRecord';
 $route['delete_purchase'] = 'Administrator/Purchase/deletePurchase';
 $route['approve_purchase'] = 'Administrator/Purchase/approvePurchase';
@@ -242,7 +242,7 @@ $route['InvCustomerName'] = 'Administrator/Sales/select_InvCustomerName';
 $route['add_sales'] = 'Administrator/Sales/addSales';
 $route['get_sales'] = 'Administrator/Sales/getSales';
 $route['get_sales_record'] = 'Administrator/Sales/getSalesRecord';
-$route['salesPending'] = 'Administrator/Sales/salesPending';    
+$route['salesPending'] = 'Administrator/Sales/salesPending';
 $route['get_saledetails'] = 'Administrator/Sales/getSaleDetails';
 $route['update_sales'] = 'Administrator/Sales/updateSales';
 $route['delete_sales'] = 'Administrator/Sales/deleteSales';

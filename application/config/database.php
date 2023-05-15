@@ -8,11 +8,13 @@ $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
 
-	'username' => 'root',
-	'password' => '',
 	// 'username' => 'sc5olbusbd',
 	// 'password' => 'a1IUKWe4XC7m',
-	'database' => 'sc5olbus_fashion_forum_ltd',
+	// 'database' => 'sc5olbus_fashion_forum_ltd',
+
+	'username' => 'root',
+	'password' => '',
+	'database' => 'fashion_forum',
 
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
